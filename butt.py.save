@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+import os 
+import RPi.GPIO as GPIO 
+import signal 
+import subprocess 
+import sys 
+import time 
+import string 
+import datetime 
+from time import strftime 
+MENU_SWITCH = 25 
+LEFT_SWITCH = 14 
+RIGHT_SWITCH = 15 
+UP_SWITCH = 17 
+DOWN_SWITCH = 18 
+#global MERGE
+MERGE=0
+host = 'mms://77.36.61.40:8061' 
+UP = 0 
+DOWN = 1 
+from lcd_class import Lcd 
+lcd = Lcd() 
+GPIO.setmode(GPIO.BCM) # Use BCM GPIO numbers 
+GPIO.setup(MENU_SWITCH, GPIO.IN) 
+#GPIO.setup(UP_SWITCH, GPIO.IN) 
+#GPIO.setup(DOWN_SWITCH, GPIO.IN) 
+#GPIO.setup(LEFT_SWITCH, GPIO.IN) 
+#GPIO.setup(RIGHT_SWITCH, GPIO.IN) 
+
+def exec_cmd(cmd): 
+	p = os.popen(cmd)
+        result = p.readline()
+#.rstrip('\n')
+        return result
+
+number = 0
+lcd.init() 
+todaysdate = strftime("%H:%M %d/%m/%Y") 
+ipaddr = exec_cmd('hostname -I') 
+lcd.line1(str(todaysdate)) 
+lcd.line2(ipaddr) 
+#	GPIO.add_event_detect(LEFT_SWITCH, GPIO.RISING, callback=switch_event_next, bouncetime=200)
+#	GPIO.add_event_detect(RIGHT_SWITCH, GPIO.RISING, callback=switch_event_prev, bouncetime=200)
+#	GPIO.add_event_detect(UP_SWITCH, GPIO.RISING, callback=switch_event_up, bouncetime=200)
+#	GPIO.add_event_detect(DOWN_SWITCH, GPIO.RISING, callback=switch_event_down, bouncetime=200) 
+
+
+def switch_event_menu(p):
+	print p
+	global MERGE
+	if MERGE == 0:
+		m=exec_cmd('su - pi -c "vlc mms://77.36.61.40:8061 -I rc --rc-host 127.0.0.1:4222 --novideo -d && ls"')
+		#exec_cmd('ls')
+		MERGE = 1
+		print MERGE
+	else:
+		print "else"
+		string =  ('echo "shutdown" | netcat 127.0.0.1 4222 ')
+		print string
+		exec_cmd('su - pi -c + string')
+		MERGE=0
+	return 
+GPIO.add_event_detect(MENU_SWITCH, GPIO.RISING, callback=switch_event_menu, bouncetime=200)
+
+while True:
+	lcd.line2(str(number))
+	number +=1
+#	print number
+	time.sleep (1)

@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+import os 
+import RPi.GPIO as GPIO 
+import signal 
+import subprocess 
+import sys 
+import time 
+import string 
+import datetime 
+from time import strftime 
+MENU_SWITCH = 25 
+LEFT_SWITCH = 14 
+RIGHT_SWITCH = 15 
+UP_SWITCH = 17 
+DOWN_SWITCH = 18 
+MERGE=0
+#merge radioul
+UP = 0 
+DOWN = 1 
+from lcd_class import Lcd 
+lcd = Lcd() 
+GPIO.setmode(GPIO.BCM) # Use BCM GPIO numbers 
+GPIO.setup(MENU_SWITCH, GPIO.IN) 
+GPIO.setup(UP_SWITCH, GPIO.IN) 
+GPIO.setup(DOWN_SWITCH, GPIO.IN) 
+GPIO.setup(LEFT_SWITCH, GPIO.IN) 
+GPIO.setup(RIGHT_SWITCH, GPIO.IN) 
+
+radiolist = open('radiolist', 'r')
+line = radiolist.readline()
+radio =[]
+while line:
+	temp = line.split('&')
+		
+	radio.append((temp[0], temp[1].strip('\n')))
+#	key +=1
+	line = radiolist.readline()
+host =""
+for i in range (0,len(radio)):
+	host = host + " "+str(radio[i][0]) 
+#print host
+#aici scot playlistul si descrierea posturilor
+
+warp = len(radio)
+radiolist.close()
+station = open('station', 'r')
+current_station = int(station.readline())
+print current_station
+station.close()
+#cate posturi avem - ca sa mearga next si dupa depasire
+#care era statia ce play-a la oprire?
+def exec_cmd(cmd): 
+	p = os.popen(cmd)
+	result = ""
+	while p.readline():
+	        result = result + p.readline()
+#.rstrip('\n')
+        return result
+
+number = 0
+lcd.init() 
+todaysdate = strftime("%H:%M %d/%m/%Y") 
+ipaddr = exec_cmd('hostname -I') 
+lcd.line1(str(todaysdate)) 
+lcd.line2(ipaddr) 
+
+
+def switch_event_menu(p):
+	time.sleep(0.4)
+
+	global MERGE
+	global radio
+	global host
+	global current_station
+	if GPIO.input(MENU_SWITCH):
+
+		if MERGE == 0:
+			exec_cmd('su - pi -c "vlc '+host+' -I rc --rc-host 127.0.0.1:4222 --novideo -d && ls"')
+#porneste radioul cu lista de statii
+			exec_cmd('echo "goto '+ current_station+' |nc 127.0.0.1 4222')
+			time.sleep(1)
+			MERGE = 1
+		else:
+			print "else"
+			string =  ('echo "shutdown" | netcat 127.0.0.1 4222 ')
+			print string
+			exec_cmd(string)
+			time.sleep(1)
+			MERGE=0
+			sys.exit(0)
+		return 
+#oprire, return to os
+	return 
+
+def switch_event_up(p):
+
+        time.sleep(0.4)
+
+        global MERGE
+	if MERGE ==1:
+		while GPIO.input(UP_SWITCH):
+			exec_cmd ('echo "volume +10"|netcat 127.0.0.1 4222')
+			time.sleep(0.2)
+	return
+#volume up =10 (cat timp e apasat butonul)
+def switch_event_down(p):
+	        
+        time.sleep(0.4)
+
+        global MERGE
+	if MERGE ==1:
+		while GPIO.input(DOWN_SWITCH):
+                        exec_cmd ('echo "volume -10"|netcat 127.0.0.1 4222')
+                        time.sleep(0.2)
+	return
+#volume down -10 (cat timp e apasat butonul)
+
+def switch_event_next(p):
+
+        time.sleep(0.4)
+
+        global MERGE
+        if MERGE ==1:
+                while GPIO.input(LEFT_SWITCH):
+                        exec_cmd ('echo "next"|netcat 127.0.0.1 4222')
+                        time.sleep(1)
+        return
+#next station (cat timp e apasat butonul)
+
+def switch_event_prev(p):
+
+        time.sleep(0.4)
+
+        global MERGE
+        if MERGE ==1:
+                while GPIO.input(RIGHT_SWITCH):
+                        exec_cmd ('echo "prev"|netcat 127.0.0.1 4222')
+                        time.sleep(1)
+			status = exec_cmd('echo "status"|netcat 127.0.0.1 4222')
+			print status
+
+        return
+#previous station (cat timp e apasat butonul)
+
+
+GPIO.add_event_detect(MENU_SWITCH, GPIO.RISING, callback=switch_event_menu, bouncetime=500)
+GPIO.add_event_detect(DOWN_SWITCH, GPIO.RISING, callback=switch_event_down, bouncetime=500) 
+GPIO.add_event_detect(UP_SWITCH, GPIO.RISING, callback=switch_event_up, bouncetime=500)
+GPIO.add_event_detect(LEFT_SWITCH, GPIO.RISING, callback=switch_event_next, bouncetime=200)
+GPIO.add_event_detect(RIGHT_SWITCH, GPIO.RISING, callback=switch_event_prev, bouncetime=200)
+
+while True:
+	lcd.line2(str(number))
+	number +=1
+	time.sleep (1)
