@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>RASPBERRY CONTROL PANEL</title>
+<style type="text/css">
+.arial {
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+	font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+<table width="608" height="105" border="0" cellpadding="2" cellspacing="0">
+  <caption class="arial">
+  <strong>RASPBERRY CONTROL PANEL
+  </strong>
+  </caption>
+  <tr>
+    <td width="100" height="100" align="center" valign="middle"><form id="form1" name="form1" method="get" action="cgi-bin/hello.py">  
+      <input name="v_up" type="submit" class="arial" id="v_up" value="V+" />
+    </form></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="prog_up2" type="submit" class="arial" id="prog_up2" value="      P+        " /></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="c_on" type="submit" class="arial" id="c_on" value="      ON         " /></td>
+    <td width="100" align="center" valign="middle"><input name="c_f_on" type="submit" class="arial" id="c_f_on" value="FULL ON " /></td>
+    <td width="188" rowspan="2" align="center" valign="middle"><img src="" alt="" name="camera" width="160" height="120" id="camera" /></td>
+  </tr>
+  <tr>
+    <td width="100" height="100" align="center" valign="middle"><input name="v_down" type="submit" class="arial" id="v_down" value="      V-        " /></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="prog_down2" type="submit" class="arial" id="prog_down2" value="      P-        " /></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="c_off" type="submit" class="arial" id="c_off" value="     OFF       " /></td>
+    <td width="100" align="center" valign="middle"><input name="c_f_off" type="submit" class="arial" id="c_f_off" value="FULL OFF " /></td>
+  </tr>
+  <tr>
+    <td width="100" height="100" align="center" valign="middle"><input name="radio_on_off" type="submit" class="arial" id="radio_on_off" value="ON/OFF  " /></td>
+    <td width="100" height="100" align="center" valign="middle">&nbsp;</td>
+    <td width="100" height="100" align="center" valign="middle"><input name="auto" type="submit" class="arial" id="auto" value=" AUTO  " /></td>
+    <td colspan="2" rowspan="2" align="left" valign="middle"><label for="radio_status"></label>
+      <label for="status centrala"></label>
+      <input name="radio_status" type="text" id="radio_status" size="35" readonly="readonly" />
+    <input name="status centrala" type="text" id="status centrala" size="35" readonly="readonly" />
+    <label for="texte"></label>
+    <textarea name="texte" id="texte" cols="35" rows="8"></textarea></td>
+  </tr>
+  <tr>
+    <td width="100" height="100" align="center" valign="middle"><input name="meteo" type="submit" class="arial" id="meteo" value="  METEO  " /></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="rss" type="submit" class="arial" id="rss" value="  RSS  " /></td>
+    <td width="100" height="100" align="center" valign="middle"><input name="mail" type="submit" class="arial" id="mail" value="  MAIL  " /></td>
+  </tr>
+</table>
+</body>
+</html>

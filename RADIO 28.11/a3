@@ -1,0 +1,3 @@
+#!/bin/sh
+vlc  mms://77.36.61.40:8061 -I dummy --novideo &
+
